@@ -1,5 +1,4 @@
-// Példa JavaScript kód
-function greet() {
-  alert('Helló, világ!');
-}
-console.log('Helló, világ!');
+var image = document.getElementById("hidden");
+var canvas = document.getElementById("myCanvas");
+var ctx = canvas.getContext("2d");
+ctx.drawImage(image, 0, 0);
