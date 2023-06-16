@@ -7,7 +7,7 @@ let x = 0;
 let y = 0;
 const columns = canvas.width / size;
 
-for (let i = 0; i = columns; i++) {
+for (let i = 0; i < columns; i++) {
   drawImage(i * size, 0);
 }
 
