@@ -10,10 +10,9 @@ const rows = canvas.height / size;
 
 const mine = 'mine'
 
-let map = [
-  [0, 0, mine, 9, mine, 0, mine, 0], 
-  [2, 3, 4, 9, mine, 0, 0, 0]
-];
+let map = createMap();  
+map[0][0] = mine;
+map[5][6] = mine;
 
 console.log(map);
 
@@ -30,3 +29,16 @@ function drawMap() {
 }
 
 drawMap();
+
+function createMap() {
+  let map = [];
+  for (let j = 0; j < rows; j++) {
+    let row = [];
+    for (let i = 0; i < columns; i++) {
+      row[i]= 0;
+    }
+    map [j] = row;
+  }
+  return map;
+}
+
