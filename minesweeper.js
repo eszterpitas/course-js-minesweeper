@@ -36,6 +36,19 @@ function calculateFieldValues(map) {
   }
 }
 
+function findNeighbourFields(map, rowI, colI) {
+  let NeighbourCoordinates = [];
+  for (let row = rowI - 1; row <= rowI + 1; row++) {
+    for (let col = colI - 1; col <= colI + 1; col++) {
+      if (row >= 0 && row < rows && col >= 0 && col < columns) {
+      console.log(row, col); 
+    }
+  }
+}
+  return NeighbourCoordinates;
+}
+
+calculateFieldValues(map);
 
 function placeMines(map, mineCount) {
   let mines = 0;
