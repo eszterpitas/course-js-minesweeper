@@ -37,16 +37,19 @@ function calculateFieldValues(map) {
 }
 
 function findNeighbourFields(map, rowI, colI) {
-  let NeighbourCoordinates = [];
+  let neighbourCoordinates = [];
   for (let row = rowI - 1; row <= rowI + 1; row++) {
     for (let col = colI - 1; col <= colI + 1; col++) {
       if (row >= 0 && row < rows && col >= 0 && col < columns) {
-      console.log(row, col); 
+        if (row !== rowI || col !== colI) {
+          neighbourCoordinates.push ({row: row, col: col});
+        }
+      }
     }
   }
+  return neighbourCoordinates;
 }
-  return NeighbourCoordinates;
-}
+
 
 calculateFieldValues(map);
 
