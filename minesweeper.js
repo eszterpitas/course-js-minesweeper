@@ -20,8 +20,8 @@ const images = {
   '8': document.getElementById("field-8"),
 }
 
-let map = createMap();
-let exploredMap = createExploredMap();
+let map = createMap(0);
+let exploredMap = createMap(false);
 placeMines(map, mineCount); 
 calculateFieldValues(map);
 drawMap();
@@ -79,28 +79,16 @@ function placeMines(map, mineCount) {
   }
 }
 
-function createMap() {
+function createMap(defaultValue) {
   let map = [];
   for (let j = 0; j < rows; j++) {
     let row = [];
     for (let i = 0; i < columns; i++) {
-      row[i]= 0;
+      row[i] = defaultValue;
     }
-    map [j] = row;
+    map[j] = row;
   }
   return map;
-}
-
-function createExploredMap() {
-  let exploredMap = [];
-  for (let j = 0; j < rows; j++) {
-    let row = [];
-    for (let i = 0; i < columns; i++) {
-      row[i]= false;
-    }
-    exploredMap [j] = row;
-  }
-  return exploredMap;
 }
 
 function drawMap() {
