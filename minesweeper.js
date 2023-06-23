@@ -39,6 +39,15 @@ function calculateFieldValues(map) { //menjünk végig minden mezőn
   }
 }
 
+canvas.addEventListener('click', function(event) {
+  const x = event.offsetX;
+  const y = event.offsetY;
+  const col = Math.floor(x / size);
+  const row = Math.floor(y / size);
+  exploredMap[row][col] = true;
+  drawMap();
+});
+
 function countMines(map, coordinates) { //számoljuk meg a szomszédos aknákat
   let mineCount = 0;
   for (let i = 0; i < coordinates.length; i++) {
