@@ -21,6 +21,7 @@ const images = {
 }
 
 let map = createMap();
+let exploderMap = [];
 placeMines(map, mineCount); 
 calculateFieldValues(map);
 drawMap();
