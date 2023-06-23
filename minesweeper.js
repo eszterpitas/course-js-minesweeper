@@ -21,7 +21,8 @@ const images = {
 }
 
 let map = createMap();
-let exploderMap = [];
+let exploredMap = createExploredMap();
+console.log(exploredMap);
 placeMines(map, mineCount); 
 calculateFieldValues(map);
 drawMap();
@@ -89,6 +90,18 @@ function createMap() {
     map [j] = row;
   }
   return map;
+}
+
+function createExploredMap() {
+  let exploredMap = [];
+  for (let j = 0; j < rows; j++) {
+    let row = [];
+    for (let i = 0; i < columns; i++) {
+      row[i]= false;
+    }
+    exploredMap [j] = row;
+  }
+  return exploredMap;
 }
 
 function drawMap() {
