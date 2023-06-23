@@ -22,21 +22,37 @@ const images = {
 
 let map = createMap();
 placeMines(map, mineCount); 
-
+calculateFieldValues(map);
 drawMap();
 
-function calculateFieldValues(map) {
+function calculateFieldValues(map) { //menjünk végig minden mezőn
   for (let rowI = 0; rowI < rows; rowI++) {
     for (let colI = 0; colI < columns; colI++) {
       let field = map[rowI][colI];
-      if (field !== mine) {
-       let NeighbourCoordinates = findNeighbourFields(map, rowI, colI);
+      if (field !== mine) { //ha nem akna, akkor számoljuk meg a szomszédos aknákat
+       let neighbourCoordinates = findNeighbourFields(map, rowI, colI);
+       let mineCount = countMines(map, neighbourCoordinates);
+       map[rowI][colI] = mineCount;
       }
     }
   }
 }
 
-function findNeighbourFields(map, rowI, colI) {
+function countMines(map, coordinates) { //számoljuk meg a szomszédos aknákat
+  let mineCount = 0;
+  for (let i = 0; i < coordinates.length; i++) {
+    let coordinate = coordinates[i];
+    let field = map[coordinate.row][coordinate.col];
+    if (field === mine) {
+      mineCount++;
+    }
+  }
+  return mineCount;
+}
+ 
+
+
+function findNeighbourFields(map, rowI, colI) { //írjuk ki a szomszéd mezők koordinátáit
   let neighbourCoordinates = [];
   for (let row = rowI - 1; row <= rowI + 1; row++) {
     for (let col = colI - 1; col <= colI + 1; col++) {
@@ -49,9 +65,6 @@ function findNeighbourFields(map, rowI, colI) {
   }
   return neighbourCoordinates;
 }
-
-
-calculateFieldValues(map);
 
 function placeMines(map, mineCount) {
   let mines = 0;
@@ -81,7 +94,7 @@ function drawMap() {
   for (let rowI = 0; rowI < rows; rowI++) {
     for (let colI = 0; colI < columns; colI++) {
     let field = map[rowI][colI];
-    let image = images [field];
+    let image = images[field];
       drawImage(image, colI * size, rowI * size);
     }
   }
