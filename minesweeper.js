@@ -44,9 +44,23 @@ canvas.addEventListener('click', function(event) {
   const y = event.offsetY;
   const col = Math.floor(x / size);
   const row = Math.floor(y / size);
-  exploredMap[row][col] = true;
+  exploredFields(row, col);
   drawMap();
 });
+
+function exploredFields(row, col) {
+  if (exploredMap[row][col] === false) {
+    exploredMap[row][col] = true;
+    if (map[row][col] === 0) {
+      let neighbourCoordinates = findNeighbourFields(map, row, col);
+      for (let i = 0; i < neighbourCoordinates.length; i++) {
+        let coordinate = neighbourCoordinates[i];
+        exploredFields(coordinate.row, coordinate.col);
+      }
+    }
+  }
+}
+
 
 function countMines(map, coordinates) { //számoljuk meg a szomszédos aknákat
   let mineCount = 0;
