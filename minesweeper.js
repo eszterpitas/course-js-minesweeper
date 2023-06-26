@@ -1,11 +1,12 @@
 const canvas = document.getElementById("myCanvas");
 const c = canvas.getContext("2d");
 const actionButton = document.getElementById("action-button");
+
 const size = 50;
 const columns = canvas.width / size;
 const rows = canvas.height / size;
 const mine = 'mine'
-const mineCount = 5;
+const mineCount = 30;
 
 const images = {
   'hidden': document.getElementById("hidden"),
@@ -22,16 +23,51 @@ const images = {
 const buttons = {
   start: 'assets/button-start.png',
   lost: 'assets/button-lost.png',
-  win: 'assets/button-win.png',
+  win: 'assets/button-won.png',
 }
-
 let isGameOver = false;
+let isFirstClick = true;
+let exploredFields = 0;
 
-let map = createMap(0);
+let map = createMap();
 let exploredMap = createMap(false);
-placeMines(map, mineCount); 
-calculateFieldValues(map);
 drawMap();
+
+canvas.addEventListener('click', function(event) {
+  if (isGameOver) return;
+  const x = event.offsetX;
+  const y = event.offsetY;
+  const col = Math.floor(x / size);
+  const row = Math.floor(y / size);
+  if (isFirstClick) {
+    placeMines(map, mineCount, row, col); 
+    calculateFieldValues(map);
+    isFirstClick = false;
+  }
+  exploreField (row, col);
+  drawMap(); 
+  if (map[row][col] === mine) {
+    isGameOver = true;
+    actionButton.src = buttons.lost;
+  } else if (exploredFields === rows * columns - mineCount) {
+    isGameOver = true;
+    actionButton.src = buttons.win;
+  }
+});
+
+function exploreField (row, col) {
+  if (exploredMap[row][col] === false) {
+    exploredFields++;
+    exploredMap[row][col] = true;
+    if (map[row][col] === 0) {
+      let neighbourCoordinates = findNeighbourFields(map, row, col);
+      for (let i = 0; i < neighbourCoordinates.length; i++) {
+        let coordinate = neighbourCoordinates[i];
+        exploreField(coordinate.row, coordinate.col);
+      }
+    }
+  }
+}
 
 function calculateFieldValues(map) { //menjünk végig minden mezőn
   for (let rowI = 0; rowI < rows; rowI++) {
@@ -46,35 +82,6 @@ function calculateFieldValues(map) { //menjünk végig minden mezőn
   }
 }
 
-canvas.addEventListener('click', function(event) {
-  if (isGameOver) return;
-  const x = event.offsetX;
-  const y = event.offsetY;
-  const col = Math.floor(x / size);
-  const row = Math.floor(y / size);
-  exploredFields(row, col);
-  drawMap(); 
-  if (map[row][col] === mine) {
-  isGameOver = true;
-  actionButton.src = buttons.lost;
-}
-});
-  
-
-function exploredFields(row, col) {
-  if (exploredMap[row][col] === false) {
-    exploredMap[row][col] = true;
-    if (map[row][col] === 0) {
-      let neighbourCoordinates = findNeighbourFields(map, row, col);
-      for (let i = 0; i < neighbourCoordinates.length; i++) {
-        let coordinate = neighbourCoordinates[i];
-        exploredFields(coordinate.row, coordinate.col);
-      }
-    }
-  }
-}
-
-
 function countMines(map, coordinates) { //számoljuk meg a szomszédos aknákat
   let mineCount = 0;
   for (let i = 0; i < coordinates.length; i++) {
@@ -86,8 +93,6 @@ function countMines(map, coordinates) { //számoljuk meg a szomszédos aknákat
   }
   return mineCount;
 }
- 
-
 
 function findNeighbourFields(map, rowI, colI) { //írjuk ki a szomszéd mezők koordinátáit
   let neighbourCoordinates = [];
@@ -103,12 +108,12 @@ function findNeighbourFields(map, rowI, colI) { //írjuk ki a szomszéd mezők k
   return neighbourCoordinates;
 }
 
-function placeMines(map, mineCount) {
+function placeMines(map, mineCount, startRow, startCol) {
   let mines = 0;
   while (mines < mineCount) {
     let x = Math.floor(Math.random() * columns);
     let y = Math.floor(Math.random() * rows);
-    if (map[y][x] !== mine) {
+    if (x !== startCol && y != startRow && map[y][x] !== mine) {
       map[y][x] = mine;
       mines++;
     }
