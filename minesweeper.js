@@ -6,7 +6,7 @@ const size = 50;
 const columns = canvas.width / size;
 const rows = canvas.height / size;
 const mine = 'mine'
-const mineCount = 30;
+const mineCount = 3;
 
 const images = {
   'hidden': document.getElementById("hidden"),
@@ -25,13 +25,13 @@ const buttons = {
   lost: 'assets/button-lost.png',
   win: 'assets/button-won.png',
 }
-let isGameOver = false;
-let isFirstClick = true;
-let exploredFields = 0;
+let isGameOver;
+let isFirstClick;
+let exploredFields;
+let map;
+let exploredMap;
 
-let map = createMap();
-let exploredMap = createMap(false);
-drawMap();
+initGame();
 
 canvas.addEventListener('click', function(event) {
   if (isGameOver) return;
@@ -53,6 +53,20 @@ canvas.addEventListener('click', function(event) {
     isGameOver = true;
     actionButton.src = buttons.win;
   }
+});
+
+function initGame() {
+  isGameOver = false;
+  isFirstClick = true;
+  exploredFields = 0;
+  map = createMap();
+  exploredMap = createMap(false);
+  drawMap();
+  actionButton.src = buttons.start;
+}
+
+actionButton.addEventListener('click', function() { 
+  initGame();
 });
 
 function exploreField (row, col) {
@@ -136,7 +150,7 @@ function drawMap() {
   for (let rowI = 0; rowI < rows; rowI++) {
     for (let colI = 0; colI < columns; colI++) {
     if (exploredMap[rowI][colI] === false) {
-      drawImage(images['hidden'], colI * size, rowI * size);
+      drawImage(images.hidden, colI * size, rowI * size);
       } else {
         let field = map[rowI][colI];
         let image = images[field];
