@@ -1,6 +1,6 @@
 const canvas = document.getElementById("myCanvas");
 const c = canvas.getContext("2d");
-
+const actionButton = document.getElementById("action-button");
 const size = 50;
 const columns = canvas.width / size;
 const rows = canvas.height / size;
@@ -19,6 +19,13 @@ const images = {
   '7': document.getElementById("field-7"),
   '8': document.getElementById("field-8"),
 }
+const buttons = {
+  start: 'assets/button-start.png',
+  lost: 'assets/button-lost.png',
+  win: 'assets/button-win.png',
+}
+
+let isGameOver = false;
 
 let map = createMap(0);
 let exploredMap = createMap(false);
@@ -40,13 +47,19 @@ function calculateFieldValues(map) { //menjünk végig minden mezőn
 }
 
 canvas.addEventListener('click', function(event) {
+  if (isGameOver) return;
   const x = event.offsetX;
   const y = event.offsetY;
   const col = Math.floor(x / size);
   const row = Math.floor(y / size);
   exploredFields(row, col);
-  drawMap();
+  drawMap(); 
+  if (map[row][col] === mine) {
+  isGameOver = true;
+  actionButton.src = buttons.lost;
+}
 });
+  
 
 function exploredFields(row, col) {
   if (exploredMap[row][col] === false) {
