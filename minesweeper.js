@@ -2,6 +2,7 @@ const canvas = document.getElementById("myCanvas");
 const c = canvas.getContext("2d");
 const actionButton = document.getElementById("action-button");
 const mineCounter = document.getElementById("mine-count");
+const timeCounter = document.getElementById("time");
 
 const size = 50;
 const columns = canvas.width / size;
@@ -17,6 +18,7 @@ const images = {
   '0': document.getElementById("field-0"),
   '1': document.getElementById("field-1"),
   '2': document.getElementById("field-2"),
+  '3': document.getElementById("field-3"),
   '4': document.getElementById("field-4"),
   '5': document.getElementById("field-5"),
   '6': document.getElementById("field-6"),
@@ -35,6 +37,7 @@ let flagMap;
 let map;
 let exploredMap;
 let remainingMines;
+let timer;
 
 initGame();
 
@@ -48,16 +51,32 @@ canvas.addEventListener('click', function(event) {
     placeMines(map, mineCount, row, col); 
     calculateFieldValues(map);
     isFirstClick = false;
+    startTimer();
   }
   exploreField (row, col);
   drawMap(); 
-  if (map[row][col] === mine) {
+  if (map[row][col] === mine && !exploredMap[row][col]) {
     looseGame();
+    stopTimer();
   } else if (exploredFields === rows * columns - mineCount) {
     isGameOver = true;
     actionButton.src = buttons.win;
+    stopTimer();
   }
 });
+
+function startTimer () {
+  let seconds = 0;
+  timer = setInterval(function() { 
+    seconds = Math.min(seconds + 1, 999);
+    timeCounter.innerHTML = convertNumberTo3DigitString(seconds);
+  }, 1000);
+}
+
+function stopTimer () {
+  clearInterval(timer);
+}
+
 
 function initGame() {
   isGameOver = false;
@@ -99,10 +118,12 @@ canvas.addEventListener('contextmenu', function(event) {
 
 actionButton.addEventListener('click', function() { 
   initGame();
+  stopTimer();
+  timeCounter.innerHTML = convertNumberTo3DigitString(0);
 });
 
 function exploreField (row, col) {
-  if (exploredMap[row][col] === false) {
+  if (!exploredMap[row][col] && !flagMap[row][col]) {
     exploredFields++;
     exploredMap[row][col] = true;
     if (map[row][col] === 0) {
