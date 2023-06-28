@@ -55,15 +55,8 @@ canvas.addEventListener('click', function(event) {
   }
   exploreField (row, col);
   drawMap(); 
-  if (map[row][col] === mine && !exploredMap[row][col]) {
-    looseGame();
-    stopTimer();
-  } else if (exploredFields === rows * columns - mineCount) {
-    isGameOver = true;
-    actionButton.src = buttons.win;
-    stopTimer();
-  }
-});
+  checkGameEnd(row, col);
+  });
 
 function startTimer () {
   let seconds = 0;
@@ -94,6 +87,10 @@ function initGame() {
 function looseGame() { 
   isGameOver = true;
   actionButton.src = buttons.lost;
+  showWrongFlags();
+}
+
+function showWrongFlags () {
   for (let rowI = 0; rowI < rows; rowI++) {
     for (let colI = 0; colI < columns; colI++) {
       if (flagMap [rowI][colI] && map[rowI][colI] !== mine) {
@@ -109,11 +106,24 @@ canvas.addEventListener('contextmenu', function(event) {
   const y = event.offsetY;
   const col = Math.floor(x / size);
   const row = Math.floor(y / size);
-  if (exploredMap[row][col]) return;
+  if (exploredMap[row][col]) {
+    const neighbourCoordinates = findNeighbourFields(map, row, col);
+    let flaggedNeighbours = countFlaggedNeighbours(neighbourCoordinates);
+    if (flaggedNeighbours === map[row][col]) {
+      for (let i = 0; i < neighbourCoordinates.length; i++) {
+        let coordinate = neighbourCoordinates[i];
+          exploreField(coordinate.row, coordinate.col);
+      }
+    }
+  } else {
   flagMap[row][col] = !flagMap[row][col];
   remainingMines += flagMap[row][col] ? -1 : 1;
-  drawMap();
   mineCounter.innerHTML = convertNumberTo3DigitString(remainingMines);
+  }
+  drawMap();
+    if (isGameOver) {
+      showWrongFlags();
+  }
 });
 
 actionButton.addEventListener('click', function() { 
@@ -122,10 +132,23 @@ actionButton.addEventListener('click', function() {
   timeCounter.innerHTML = convertNumberTo3DigitString(0);
 });
 
+function checkGameEnd(row, col) {
+  if (map[row][col] === mine && exploredMap[row][col]) {
+    looseGame();
+    stopTimer();
+  } else if (exploredFields === rows * columns - mineCount) {
+    isGameOver = true;
+    actionButton.src = buttons.win;
+    stopTimer();
+    }
+}
+
+
 function exploreField (row, col) {
   if (!exploredMap[row][col] && !flagMap[row][col]) {
     exploredFields++;
     exploredMap[row][col] = true;
+    checkGameEnd(row, col);
     if (map[row][col] === 0) {
       let neighbourCoordinates = findNeighbourFields(map, row, col);
       for (let i = 0; i < neighbourCoordinates.length; i++) {
@@ -160,6 +183,18 @@ function countMines(map, coordinates) { //számoljuk meg a szomszédos aknákat
   }
   return mineCount;
 }
+
+function countFlaggedNeighbours(coordinates) {
+  let flaggedNeighbours = 0;
+  for (let i = 0; i < coordinates.length; i++) {
+    let coordinate = coordinates[i];
+    if (flagMap[coordinate.row][coordinate.col]) {
+      flaggedNeighbours++;
+    }
+  }
+  return flaggedNeighbours;
+}
+
 
 function findNeighbourFields(map, rowI, colI) { //írjuk ki a szomszéd mezők koordinátáit
   let neighbourCoordinates = [];
